@@ -8,10 +8,12 @@ This repo keeps durable, domain-organized knowledge in `knowledge/` (separate fr
 code). Use the `knowledge-base` skill for the full read/write procedure — which domain
 to follow from `main.md`, and how to record anything a task teaches you.
 
-Before writing any knowledge page, ask where the fact came from — this decides the
-folder, not how important or permanent the fact feels:
-- Came from a raw file under a domain's `sources/` (or content the user gave you that
-  mirrors one), even after you summarized/reformatted/translated it → `derived/`.
-  Never `self/`, no matter how much rewriting you did to it.
-- Came from doing the project's own work (debugging, reading its code, a decision made
-  during a task) → `self/`.
+Before writing any knowledge page, ask **external resource vs. internal project
+work** — this decides the folder, not how important or permanent the fact feels:
+- **External** — a file/doc/spec/data the user gives you, or anything already under a
+  domain's `sources/` — even after you summarize/reformat/translate it, and even if
+  it isn't copied into `sources/` yet (land a copy there first) → `derived/`. Never
+  `self/`, no matter how much rewriting you did or how directly the user asked for it
+  ("make a knowledge page from this file" is still an external source → `derived/`).
+- **Internal** — came from doing the project's own work (debugging, reading its code,
+  a decision made during a task), with no external file or doc involved → `self/`.

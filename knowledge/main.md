@@ -49,18 +49,25 @@ never by guessing from content:
 
 ## Two kinds of knowledge — never mixed, never the same file
 
-The deciding question is **where the fact came from**, not how important, permanent,
-or well-written it is:
-- Did it come from a raw file under `sources/` (or content the user handed you that
-  mirrors one) — even after you summarized, reformatted, or translated it? → always
+The deciding question is **external resource vs. internal project work**, not how
+important, permanent, or well-written the result is:
+- **External** — any file, doc, spec, or data the user hands you, or that already
+  lives under a domain's `sources/` — even after you summarize, reformat, or
+  translate it, and even if it isn't copied into `sources/` yet at the moment you're
+  asked (land a copy there first; see SKILL.md's sync procedure). → always
   `derived/`, never `self/`.
-- Did it come from doing the project's own work — debugging, reading its code, a
-  decision made mid-task? → `self/`.
+- **Internal** — produced by doing the project's own work: debugging, reading its
+  code, a decision made mid-task. Nothing external was handed to you or consulted as
+  the source of the fact. → `self/`.
 
-A common mistake: reading a vendor doc / spec dropped in `sources/`, turning it into
-readable prose, and filing that under `self/` because it "feels like knowledge you
-figured out." It isn't — extracting and rephrasing a source file is still mirroring
-it, so it belongs in `derived/`.
+Two common mistakes, both wrong for the same reason (the source was external):
+- Reading a vendor doc / spec already sitting in `sources/`, turning it into readable
+  prose, and filing that under `self/` because it "feels like knowledge you figured
+  out."
+- The user says "make a knowledge page from this file" and hands you something that
+  isn't in `sources/` yet — writing straight to `self/` because "it's not technically
+  in `sources/` so the rule doesn't apply." It's still external material; land it in
+  `sources/` first, then generate the `derived/` page from it.
 
 - **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned from doing
   project work: gotchas, decisions and why, constraints. Evolves freely as the

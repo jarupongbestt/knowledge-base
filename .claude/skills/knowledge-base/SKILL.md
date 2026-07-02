@@ -62,18 +62,25 @@ real domain.
 
 ## Two kinds of knowledge — never mixed, never the same file
 
-The deciding question is **where the fact came from**, not how important, permanent,
-or well-written it is:
-- Did it come from a raw file under `sources/` (or content the user handed you that
-  mirrors one) — even after you summarized, reformatted, or translated it? → always
-  `derived/`, never `self/`.
-- Did it come from doing the project's own work — debugging, reading its code, a
-  decision made mid-task? → `self/`.
+The deciding question is **external resource vs. internal project work**, not how
+important, permanent, or well-written the result is:
+- **External** — any file, doc, spec, or data the user hands you, or that already
+  lives under a domain's `sources/` — even after you summarize, reformat, or
+  translate it, and even if it isn't copied into `sources/` yet at the moment you're
+  asked (land a copy there first; see the sync procedure below). → always `derived/`,
+  never `self/`.
+- **Internal** — produced by doing the project's own work: debugging, reading its
+  code, a decision made mid-task. Nothing external was handed to you or consulted as
+  the source of the fact. → `self/`.
 
-A common mistake: reading a vendor doc / spec dropped in `sources/`, turning it into
-readable prose, and filing that under `self/` because it "feels like knowledge you
-figured out." It isn't — extracting and rephrasing a source file is still mirroring
-it, so it belongs in `derived/`.
+Two common mistakes, both wrong for the same reason (the source was external):
+- Reading a vendor doc / spec already sitting in `sources/`, turning it into readable
+  prose, and filing that under `self/` because it "feels like knowledge you figured
+  out."
+- The user says "make a knowledge page from this file" and hands you something that
+  isn't in `sources/` yet — writing straight to `self/` because "it's not technically
+  in `sources/` so the rule doesn't apply." It's still external material; land it in
+  `sources/` first (step 0 below), then generate the `derived/` page from it.
 
 - **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned by doing
   project work: gotchas, decisions and why, constraints, integration quirks.
@@ -115,11 +122,20 @@ Two separate triggers land here — same procedure either way:
    Most routine tasks (typo fixes, trivial lookups, small mechanical edits) will
    honestly answer "no" — that's fine, don't force a page into existence.
 2. **Direct request (explicit, always acts).** The user asks outright to write/update
-   a knowledge page about something — e.g. "ทำ knowledge file xxx ให้หน่อย", "record
-   this as knowledge", "write down what we just learned about X." If the content
-   doesn't point at (or mirror) a raw file under some domain's `sources/`, it's
-   self-knowledge by the origin test above — write it to `self/`, never `derived/`,
-   regardless of how the user phrased the request.
+   a knowledge page. Before writing anything, re-run the origin test — a direct
+   request does not default to `self/`:
+   - "Make knowledge from this file / these files / this doc" (the user hands you
+     external material, or points at something already under `sources/`) → **always
+     `derived/`**, via the sync procedure below. If the file isn't under
+     `knowledge/<domain>/sources/` yet, that's still derived — place a copy there
+     first (that's the raw material), then generate the `derived/` page from it. Never
+     shortcut this by writing straight to `self/` just because the request came as a
+     direct instruction rather than a `sources/` change.
+   - "Record what we learned / write down this decision / document this gotcha" (no
+     external file involved — the knowledge is about the project's own work) →
+     `self/`.
+   The phrasing of the request ("record this as knowledge", "ทำ knowledge file ให้
+   หน่อย") does not decide the kind — whether external material is involved does.
 
 In both cases, including on a brand-new project with an empty Domains table in
 `main.md`, run the same steps below — creating the first domain from scratch is not a
@@ -155,14 +171,22 @@ special case, just step 1 with no existing rows to match against.
 
 Only run this when the user explicitly asks — e.g. "generate knowledge from
 `sources/webhook-spec.pdf` in the shopee domain", "sync knowledge from
-`sources/infra/Dockerfile`", "this file in sources/ changed, update the knowledge".
-Never trigger it automatically from routine task work, and never infer that a file
-"must have changed" — only re-sync on explicit instruction.
+`sources/infra/Dockerfile`", "this file in sources/ changed, update the knowledge",
+"make a knowledge page from this file/doc/spec" (even if what they hand you isn't
+under `sources/` yet — see step 0). Never trigger it automatically from routine task
+work, and never infer that a file "must have changed" — only re-sync on explicit
+instruction.
 
 The raw file can be any type — markdown, PDF, code, config, schema, a Dockerfile,
 anything, at any path under `knowledge/<domain>/sources/` (no required layout). Read it
 with whichever tool fits its type (Read handles text, markdown, and PDF directly).
 
+0. If the user handed you external material directly (a file path outside
+   `knowledge/`, pasted content, an attachment) instead of pointing at something
+   already under `sources/`, place a copy of it under
+   `knowledge/<domain>/sources/<sensible-path>` first — that copy is the raw material
+   `source_ref` will point to. Don't skip straight to writing a `.md` page from the
+   external content without landing a raw copy in `sources/` first.
 1. Read the raw file in full.
 2. Decide the domain (same rule as above — usually already implied by which domain's
    `sources/` the file is under) and a topic name for it.
