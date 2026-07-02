@@ -62,6 +62,19 @@ real domain.
 
 ## Two kinds of knowledge — never mixed, never the same file
 
+The deciding question is **where the fact came from**, not how important, permanent,
+or well-written it is:
+- Did it come from a raw file under `sources/` (or content the user handed you that
+  mirrors one) — even after you summarized, reformatted, or translated it? → always
+  `derived/`, never `self/`.
+- Did it come from doing the project's own work — debugging, reading its code, a
+  decision made mid-task? → `self/`.
+
+A common mistake: reading a vendor doc / spec dropped in `sources/`, turning it into
+readable prose, and filing that under `self/` because it "feels like knowledge you
+figured out." It isn't — extracting and rephrasing a source file is still mirroring
+it, so it belongs in `derived/`.
+
 - **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned by doing
   project work: gotchas, decisions and why, constraints, integration quirks.
   Evolves freely as the project develops. This is the default kind — most tasks write
