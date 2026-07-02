@@ -1,0 +1,18 @@
+# Illustrative only. This is the kind of raw file a user drops under
+# knowledge/<domain>/sources/ as-is — untouched, whatever shape the vendor gave it in,
+# at whatever path. Compare it directly against knowledge/_example/field-reference.md,
+# its mirrored knowledge page.
+components:
+  schemas:
+    WebhookPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [succeeded, failed, pending_retry]
+        retry_after_ms:
+          type: integer
+          description: Present only when status = pending_retry
+        order_ref:
+          type: string
+          description: Merchant-supplied order ID, echoed back verbatim

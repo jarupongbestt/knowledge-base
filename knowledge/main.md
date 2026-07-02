@@ -13,16 +13,61 @@ updated: 2026-07-02
 > No domains exist yet. See "Creating a new domain" below — the first task that touches
 > a distinct area should create one.
 
-## How this knowledge base is organized
+## How to use this knowledge base
 
-- `knowledge/main.md` (this file) — lists all domains, nothing else.
-- `knowledge/<domain>/index.md` — navigation hints for that domain: what's inside, which
-  page to read for which kind of work.
-- `knowledge/<domain>/<topic>.md` — the actual detail pages a domain's index points to.
+1. Read this file (`main.md`) — it lists every domain that exists.
+2. Pick the domain(s) relevant to the task (a task can touch more than one).
+3. Read that domain's `knowledge/<domain>/index.md` — its navigation table routes you
+   to the specific topic page(s) for the kind of work you're doing.
+4. Read the topic page(s) it points to — that's where the actual detail lives.
+5. If a topic page's `source_refs` / `source_ref` names a specific raw file, read that
+   file too if the task needs that level of detail.
 
-Rule of thumb: **main.md tells you which domain, the domain's index.md tells you which
-page.** Never put topic detail directly in main.md or in a domain's index.md — those two
-are navigation only.
+`main.md` and each domain's `index.md` are navigation only — pointers, not content.
+Detail always lives in topic pages. Never put topic detail directly in either of them.
+
+## Where things live
+
+```
+knowledge/
+  main.md                     # this file
+  <domain>/index.md           # navigation table for that domain
+  <domain>/<topic>.md         # EVERY topic page, flat — both self-knowledge and
+                               # sources-derived live directly here, side by side.
+  <domain>/sources/...        # this domain's raw data lake: ANY file type, ANY
+                               # layout — e.g. sources/Dockerfile, sources/ui/src/test.tsx,
+                               # sources/spec.pdf. No required structure. This is
+                               # INPUT, never knowledge, and never a topic page.
+```
+
+A topic page's *kind* is decided by its frontmatter, not its location:
+- No `source_ref` / no `locked: true` → self-knowledge, freely editable.
+- `source_ref: <path into knowledge/<domain>/sources/...>` + `locked: true` →
+  sources-derived, never hand-edited.
+
+## Two kinds of knowledge — never mixed
+
+- **Self-knowledge** (`knowledge/<domain>/<topic>.md`, no `source_ref`) — learned from
+  doing project work: gotchas, decisions and why, constraints. Evolves freely as the
+  project develops. This is the default kind; see "Keeping this up to date" below.
+- **Sources-derived** (`knowledge/<domain>/<topic>.md`, with `source_ref` +
+  `locked: true`) — generated from one raw file the user dropped somewhere under
+  `knowledge/<domain>/sources/`. That file can be *any type* — markdown, PDF, code,
+  config, schema, a vendor spec — the resulting knowledge page is always `.md`, but
+  what it mirrors isn't limited to `.md`, and the raw file itself is never touched or
+  moved. Must mirror it faithfully — no inference, no "improvements". Locked: never
+  hand-edited during normal task work, only regenerated via the sync procedure in
+  SKILL.md, and only when the user adds/changes a file under `sources/` or gives
+  updated content directly.
+- Don't confuse a topic page with the raw file it mirrors — `sources/` holds only raw,
+  untouched files; a `.md` page under `knowledge/<domain>/` is always curated knowledge
+  about one topic, never a raw file itself.
+- If a fact already lives in a sources-derived page, a self-knowledge page should link
+  to it (`[[topic]]`) rather than duplicate it — the two must never say the same thing
+  in two places that can drift apart.
+- See `knowledge/_example/` for a filled-in worked example of both kinds side by side,
+  including its own `sources/` fixture (illustrative only — not a real domain, don't
+  add it to the Domains table).
 
 ## What counts as a "domain"
 
