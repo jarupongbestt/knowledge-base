@@ -37,6 +37,9 @@ used with Claude Code.
    don't pre-create empty pages speculatively.
 4. Keep `main.md` and each domain's `index.md` as navigation only; put actual knowledge
    in topic pages.
+5. Before ending any non-trivial task, Claude Code checks whether it learned something
+   durable (a gotcha, a constraint, a decision and why) and records it under `self/` if
+   so — this check is mandatory even when the answer turns out to be "no."
 
 ## Reading knowledge (as an agent or a person)
 
