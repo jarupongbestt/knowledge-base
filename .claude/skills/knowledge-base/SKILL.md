@@ -101,20 +101,29 @@ it, so it belongs in `derived/`.
   the team's integration gotchas in `self/webhook.md`) — that's the two kinds living
   side by side without ever merging into one file.
 
-## Before ending any non-trivial task — check for durable knowledge
+## Recording self-knowledge
 
-This check is mandatory, not optional — ask it every time, even when the answer is
-no. Skipping the question (as opposed to answering "no") is the failure mode this
-step exists to prevent.
+Two separate triggers land here — same procedure either way:
 
-Durable = a gotcha, a non-obvious constraint, an integration quirk, an architectural
-decision and why — something a future task in this area would benefit from knowing.
-Not durable = routine implementation detail already obvious from reading the code, or
-a narrated log of what you did this session. Most routine tasks (typo fixes, trivial
-lookups, small mechanical edits) will honestly answer "no" — that's fine, don't force
-a page into existence.
+1. **End-of-task check (automatic, mandatory).** Before ending any non-trivial task,
+   ask: did this teach a gotcha, a non-obvious constraint, an integration quirk, an
+   architectural decision and why — something a future task in this area would
+   benefit from knowing? Asking is mandatory every time, even when the honest answer
+   is no — skipping the question (as opposed to answering "no") is the failure mode
+   this step exists to prevent. Not durable = routine implementation detail already
+   obvious from reading the code, or a narrated log of what you did this session.
+   Most routine tasks (typo fixes, trivial lookups, small mechanical edits) will
+   honestly answer "no" — that's fine, don't force a page into existence.
+2. **Direct request (explicit, always acts).** The user asks outright to write/update
+   a knowledge page about something — e.g. "ทำ knowledge file xxx ให้หน่อย", "record
+   this as knowledge", "write down what we just learned about X." If the content
+   doesn't point at (or mirror) a raw file under some domain's `sources/`, it's
+   self-knowledge by the origin test above — write it to `self/`, never `derived/`,
+   regardless of how the user phrased the request.
 
-If the answer is yes, record it as self-knowledge before considering the task done:
+In both cases, including on a brand-new project with an empty Domains table in
+`main.md`, run the same steps below — creating the first domain from scratch is not a
+special case, just step 1 with no existing rows to match against.
 
 1. **Decide the domain.** A domain is a bounded area with its own concerns and
    vocabulary:

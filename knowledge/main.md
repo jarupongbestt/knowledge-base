@@ -107,8 +107,11 @@ Don't create a domain for a single function or a one-off script — that belongs
 1. Copy `knowledge/_template/index.md` to `knowledge/<domain>/index.md`, fill in the
    frontmatter and the navigation table.
 2. Add one row for it in the **Domains** table above.
-3. Add topic pages under `knowledge/<domain>/` as the work produces them — don't
-   pre-create empty pages speculatively.
+3. Add topic pages under `knowledge/<domain>/self/` or `knowledge/<domain>/derived/`
+   (per the origin test above) as the work produces them — don't pre-create empty
+   pages speculatively. This applies the same way for a brand-new project with no
+   domains yet — the first task that touches a distinct area creates its domain, no
+   special-casing needed.
 
 ## Keeping this up to date
 
@@ -119,6 +122,9 @@ Don't create a domain for a single function or a one-off script — that belongs
   time, not skipped.
 - If yes, write it to the relevant domain's `self/<topic>.md` page, not into chat, as
   part of finishing the task — not deferred to "later."
+- If the user directly asks to write/update a knowledge page (rather than this coming
+  up as a side effect of other work), run the same decide-domain-then-write steps
+  immediately — that's an explicit trigger, not something to defer or skip.
 - When a domain's index.md navigation table stops matching reality (new pages, moved
   concerns), fix it as part of that task, not later.
 - Prefer updating an existing page over creating a new one for closely related info.
