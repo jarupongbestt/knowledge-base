@@ -41,59 +41,26 @@ knowledge/
                                # INPUT, never knowledge, and never a topic page.
 ```
 
-A topic page's *kind* is decided by which folder it's in — `self/` or `derived/` —
-never by guessing from content:
-- `knowledge/<domain>/self/<topic>.md` → self-knowledge, freely editable.
-- `knowledge/<domain>/derived/<topic>.md` → sources-derived, never hand-edited;
-  frontmatter still carries `source_ref` + `locked: true` for traceability.
+A topic page's *kind* is decided by which folder it's in, never by guessing from
+content — `derived/` pages are never hand-edited (frontmatter carries `source_ref` +
+`locked: true` for traceability; see the next section for how the kind is decided).
 
 ## Two kinds of knowledge — never mixed, never the same file
 
-The deciding question is **external resource vs. internal project work**, not how
-important, permanent, or well-written the result is:
-- **External** — any file, doc, spec, or data the user hands you, or that already
-  lives under a domain's `sources/` — even after you summarize, reformat, or
-  translate it, and even if it isn't copied into `sources/` yet at the moment you're
-  asked (land a copy there first; see SKILL.md's sync procedure). → always
-  `derived/`, never `self/`.
-- **Internal** — produced by doing the project's own work: debugging, reading its
-  code, a decision made mid-task. Nothing external was handed to you or consulted as
-  the source of the fact. → `self/`.
+The deciding question is **external resource vs. internal project work**:
+- **External** (a file/doc/spec the user hands you, or anything under a domain's
+  `sources/`) → always `derived/`, never `self/` — even after you rewrite it, and
+  even if it isn't copied into `sources/` yet ("make a knowledge page from this file"
+  is still external; land it in `sources/` first).
+- **Internal** (produced by doing the project's own work — debugging, reading its
+  code, a decision made mid-task, nothing external consulted) → `self/`.
+- A topic can have both, as two separate files in different folders
+  (`self/webhook.md` + `derived/webhook.md`) — never merged into one.
+- If a fact already lives in `derived/`, link to it from `self/` (`[[topic]]`) instead
+  of restating it.
 
-Two common mistakes, both wrong for the same reason (the source was external):
-- Reading a vendor doc / spec already sitting in `sources/`, turning it into readable
-  prose, and filing that under `self/` because it "feels like knowledge you figured
-  out."
-- The user says "make a knowledge page from this file" and hands you something that
-  isn't in `sources/` yet — writing straight to `self/` because "it's not technically
-  in `sources/` so the rule doesn't apply." It's still external material; land it in
-  `sources/` first, then generate the `derived/` page from it.
-
-- **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned from doing
-  project work: gotchas, decisions and why, constraints. Evolves freely as the
-  project develops. This is the default kind; see "Keeping this up to date" below.
-- **Sources-derived** (`knowledge/<domain>/derived/<topic>.md`) — generated from one
-  raw file the user dropped somewhere under `knowledge/<domain>/sources/`. That file
-  can be *any type* — markdown, PDF, code, config, schema, a vendor spec — the
-  resulting knowledge page is always `.md`, but what it mirrors isn't limited to
-  `.md`, and the raw file itself is never touched or moved. Must mirror it
-  faithfully — no inference, no "improvements". Locked: never hand-edited during
-  normal task work, only regenerated via the sync procedure in SKILL.md, and only
-  when the user adds/changes a file under `sources/` or gives updated content
-  directly.
-- If a topic has both kinds of knowledge (e.g. a vendor's field reference *and* what
-  the team learned integrating with it), that's two separate files with the same
-  topic name in different folders — `self/webhook.md` and `derived/webhook.md` — never
-  one file trying to hold both.
-- Don't confuse a topic page with the raw file it mirrors — `sources/` holds only raw,
-  untouched files; a `.md` page under `self/` or `derived/` is always curated
-  knowledge about one topic, never a raw file itself.
-- If a fact already lives in a sources-derived page, a self-knowledge page should link
-  to it (`[[topic]]`) rather than duplicate it — the two must never say the same thing
-  in two places that can drift apart.
-- See `knowledge/_example/` for a filled-in worked example of both kinds side by side,
-  including its own `sources/` fixture (illustrative only — not a real domain, don't
-  add it to the Domains table).
+Full write procedure, edge cases, and a worked example: see
+`.claude/skills/knowledge-base/SKILL.md` and `knowledge/_example/`.
 
 ## What counts as a "domain"
 
@@ -122,16 +89,12 @@ Don't create a domain for a single function or a one-off script — that belongs
 
 ## Keeping this up to date
 
-- **Before ending any non-trivial task**, explicitly decide: did this task teach a
-  gotcha, a non-obvious constraint, an architectural decision, or an integration
-  quirk? This is a required check, not an optional afterthought — most routine tasks
-  will genuinely answer "no" and that's fine, but the question must be asked every
-  time, not skipped.
-- If yes, write it to the relevant domain's `self/<topic>.md` page, not into chat, as
-  part of finishing the task — not deferred to "later."
-- If the user directly asks to write/update a knowledge page (rather than this coming
-  up as a side effect of other work), run the same decide-domain-then-write steps
-  immediately — that's an explicit trigger, not something to defer or skip.
-- When a domain's index.md navigation table stops matching reality (new pages, moved
-  concerns), fix it as part of that task, not later.
-- Prefer updating an existing page over creating a new one for closely related info.
+- **Before ending any non-trivial task**, ask whether it taught a gotcha, constraint,
+  decision, or integration quirk — mandatory to ask every time, even when the answer
+  is "no." If yes, write it to `self/<topic>.md` as part of finishing the task, not
+  deferred.
+- A direct request to write/update a knowledge page follows the same procedure
+  immediately — apply the origin test above rather than defaulting to `self/`.
+- Fix a domain's `index.md` navigation table as part of the same task if it goes
+  stale; prefer updating an existing page over creating a near-duplicate.
+- Full procedure: `.claude/skills/knowledge-base/SKILL.md`.

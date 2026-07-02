@@ -27,24 +27,11 @@ knowledge/
 ```
 
 A topic page's *kind* is decided by which folder it's in, never by guessing from
-content or frontmatter alone:
-- `knowledge/<domain>/self/<topic>.md` → self-knowledge, freely editable.
-- `knowledge/<domain>/derived/<topic>.md` → sources-derived, never hand-edited;
-  frontmatter still carries `source_ref` + `locked: true` for traceability, but the
-  folder is what enforces the boundary — an agent should never need to open a file
-  and check its frontmatter just to know whether it's allowed to edit it.
-
-Never confuse a topic page with the raw file it mirrors. `knowledge/<domain>/sources/`
-holds only raw, untouched files (a Dockerfile, a test file, a PDF, a spec — whatever,
-wherever, no imposed layout). A `.md` page under `self/` or `derived/` is always
-curated knowledge about exactly one topic — it is never itself a raw file, and a raw
-file is never itself knowledge.
-
-There are two kinds of topic page and they must never overlap in content — see
-"Two kinds of knowledge" below before writing anything. `knowledge/_example/` is a
-filled-in worked example of both kinds side by side, including its own `sources/`
-fixture — read it if the structure below is unclear. It's illustrative only, not a
-real domain.
+content or frontmatter alone — see "Two kinds of knowledge" below before writing
+anything. `knowledge/<domain>/sources/` holds only raw, untouched files (a Dockerfile,
+a test file, a PDF, a spec — whatever, wherever); it is input, never itself a topic
+page. `knowledge/_example/` is a filled-in worked example of both kinds side by
+side, including its own `sources/` fixture — illustrative only, not a real domain.
 
 ## How to use this knowledge base (read path)
 
@@ -67,46 +54,30 @@ important, permanent, or well-written the result is:
 - **External** — any file, doc, spec, or data the user hands you, or that already
   lives under a domain's `sources/` — even after you summarize, reformat, or
   translate it, and even if it isn't copied into `sources/` yet at the moment you're
-  asked (land a copy there first; see the sync procedure below). → always `derived/`,
-  never `self/`.
+  asked (land a copy there first — step 0 of the sync procedure below). → always
+  `derived/`, never `self/`.
 - **Internal** — produced by doing the project's own work: debugging, reading its
   code, a decision made mid-task. Nothing external was handed to you or consulted as
   the source of the fact. → `self/`.
 
-Two common mistakes, both wrong for the same reason (the source was external):
-- Reading a vendor doc / spec already sitting in `sources/`, turning it into readable
-  prose, and filing that under `self/` because it "feels like knowledge you figured
-  out."
-- The user says "make a knowledge page from this file" and hands you something that
-  isn't in `sources/` yet — writing straight to `self/` because "it's not technically
-  in `sources/` so the rule doesn't apply." It's still external material; land it in
-  `sources/` first (step 0 below), then generate the `derived/` page from it.
+The mistake to watch for: treating "not yet copied into `sources/`" or "the user
+asked me directly" as license to default to `self/`. Neither changes the answer —
+only whether the source was external does. A vendor doc turned into readable prose is
+still `derived/`; so is "make a knowledge page from this file" when the file hasn't
+been dropped into `sources/` yet.
 
-- **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned by doing
-  project work: gotchas, decisions and why, constraints, integration quirks.
-  Evolves freely as the project develops. This is the default kind — most tasks write
-  here.
-- **Sources-derived** (`knowledge/<domain>/derived/<topic>.md`) — generated from one
-  raw file somewhere under `knowledge/<domain>/sources/`. That file can be *any
-  type* — a markdown doc, a PDF spec, a code file, a Dockerfile, a config/schema
-  file, anything, at any path, no imposed layout. The knowledge page itself is
-  always `.md`; what it mirrors isn't, and the raw file is never edited or moved.
-  Must mirror it faithfully: no inference, no filling gaps, no "improving" the
-  wording. Frontmatter still carries `source_ref` + `locked: true`. **Locked** —
-  never hand-edit these during normal task work. Only touch them via the sync
-  procedure below, and only when the user adds/changes a file under `sources/` or
-  gives you updated content for one directly.
-- The folder is the enforcement mechanism, not a suggestion: if you're about to edit
-  a file under a domain's `derived/`, stop — that edit belongs in `self/` instead
-  (either the matching-named file there, or a new one).
-- If a fact already lives in a sources-derived page, a self-knowledge page must link to
-  it (`[[topic]]`) instead of restating it — the two must never say the same thing in
-  two places that can drift apart. If you notice self-knowledge duplicating a
-  sources-derived page, replace the duplicate with a link as part of that task.
-- A topic can legitimately have both a `self/<topic>.md` and a `derived/<topic>.md`
-  with the same name (e.g. the vendor's field reference in `derived/webhook.md` and
-  the team's integration gotchas in `self/webhook.md`) — that's the two kinds living
-  side by side without ever merging into one file.
+`derived/` pages (any type of raw file, mirrored faithfully — no inference, no
+filling gaps, no "improving" the wording) carry `source_ref` + `locked: true` and are
+**never hand-edited** during normal task work — only regenerated via the sync
+procedure below. The folder is the enforcement mechanism, not the frontmatter: if
+you're about to edit a file under `derived/`, stop — that edit belongs in `self/`
+instead (either the matching-named file there, or a new one).
+
+A topic can legitimately have both a `self/<topic>.md` and a `derived/<topic>.md`
+with the same name (e.g. `derived/webhook.md` for the vendor's field reference,
+`self/webhook.md` for the team's integration gotchas) — two files side by side, never
+merged into one. If a fact already lives in `derived/`, link to it from `self/`
+(`[[topic]]`) instead of restating it — replace any existing duplicate the same way.
 
 ## Recording self-knowledge
 
@@ -122,20 +93,14 @@ Two separate triggers land here — same procedure either way:
    Most routine tasks (typo fixes, trivial lookups, small mechanical edits) will
    honestly answer "no" — that's fine, don't force a page into existence.
 2. **Direct request (explicit, always acts).** The user asks outright to write/update
-   a knowledge page. Before writing anything, re-run the origin test — a direct
-   request does not default to `self/`:
-   - "Make knowledge from this file / these files / this doc" (the user hands you
-     external material, or points at something already under `sources/`) → **always
-     `derived/`**, via the sync procedure below. If the file isn't under
-     `knowledge/<domain>/sources/` yet, that's still derived — place a copy there
-     first (that's the raw material), then generate the `derived/` page from it. Never
-     shortcut this by writing straight to `self/` just because the request came as a
-     direct instruction rather than a `sources/` change.
-   - "Record what we learned / write down this decision / document this gotcha" (no
-     external file involved — the knowledge is about the project's own work) →
-     `self/`.
-   The phrasing of the request ("record this as knowledge", "ทำ knowledge file ให้
-   หน่อย") does not decide the kind — whether external material is involved does.
+   a knowledge page. The phrasing ("record this as knowledge", "ทำ knowledge file ให้
+   หน่อย") never decides the kind — re-run the origin test before writing anything:
+   - Hands you a file/doc, or points at one — even if it's not under `sources/`
+     yet — → `derived/` via the sync procedure below (step 0 lands it in `sources/`
+     first if needed). Never shortcut straight to `self/` just because the request
+     was direct.
+   - Asks you to write down something learned from the project's own work, no
+     external file involved → `self/`.
 
 In both cases, including on a brand-new project with an empty Domains table in
 `main.md`, run the same steps below — creating the first domain from scratch is not a
