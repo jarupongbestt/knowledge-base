@@ -9,21 +9,22 @@ updated: <YYYY-MM-DD>
 
 | When working on... | Read this page |
 |---|---|
-| <e.g. webhook signature verification> | `<topic-page>.md` |
-| <e.g. order status sync> | `<topic-page>.md` |
+| <e.g. webhook signature verification> | `self/<topic-page>.md` |
+| <e.g. order status sync> | `self/<topic-page>.md` |
 
 ## Navigation Hints — Sources-derived (locked, mirrors a raw file in sources/)
 
 | When working on... | Read this page | Raw source |
 |---|---|---|
-| <e.g. official API field reference> | `<topic-page>.md` | `sources/<wherever the file actually is>` |
+| <e.g. official API field reference> | `derived/<topic-page>.md` | `sources/<wherever the file actually is>` |
 
-> Both tables point into the same flat set of files directly under
-> `knowledge/<domain>/` — what makes a page sources-derived is its frontmatter
-> (`locked: true` + `source_ref`), not its location. The raw file it mirrors lives in
+> Self-knowledge pages live in `knowledge/<domain>/self/`; sources-derived pages live
+> in `knowledge/<domain>/derived/` — the folder is what makes a page sources-derived,
+> not just its frontmatter (though `locked: true` + `source_ref` are still set on
+> `derived/` pages for traceability). The raw file a `derived/` page mirrors lives in
 > `knowledge/<domain>/sources/`, this domain's own data lake — any file type, any
-> layout, no required structure. Pages under this heading must not be hand-edited —
-> see SKILL.md's sync procedure. If this section has no rows yet, omit it.
+> layout, no required structure. Pages under `derived/` must not be hand-edited — see
+> SKILL.md's sync procedure. If this section has no rows yet, omit it.
 
 ## Overview
 

@@ -13,5 +13,6 @@ also blocked brand-new (non-retry) payments for ~60s.
 Decision: each order ID gets its own exponential backoff state, jittered independently,
 so retries naturally spread out instead of clustering.
 
-See `field-reference.md` for the exact status codes the gateway returns — this page
-only covers the retry *strategy*, not the wire format.
+See `[[field-reference]]` (`knowledge/_example/derived/field-reference.md`) for the
+exact status codes the gateway returns — this page only covers the retry *strategy*,
+not the wire format.

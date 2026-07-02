@@ -1,7 +1,7 @@
 # Illustrative only. This is the kind of raw file a user drops under
 # knowledge/<domain>/sources/ as-is — untouched, whatever shape the vendor gave it in,
-# at whatever path. Compare it directly against knowledge/_example/field-reference.md,
-# its mirrored knowledge page.
+# at whatever path. Compare it directly against
+# knowledge/_example/derived/field-reference.md, its mirrored knowledge page.
 components:
   schemas:
     WebhookPayload:

@@ -14,27 +14,31 @@ knowledge/
   main.md                     # root index: lists every domain, nothing else
   <domain>/index.md           # navigation table for that domain: what's inside,
                                # which page for what
-  <domain>/<topic>.md         # EVERY topic page, flat. Self-knowledge and
-                               # sources-derived pages live side by side directly here.
+  <domain>/self/<topic>.md    # self-knowledge topic pages, freely editable
+  <domain>/derived/<topic>.md # sources-derived topic pages, locked, mirror a raw
+                               # file under this domain's sources/
   <domain>/sources/...        # this domain's raw data lake: ANY file type, ANY
                                # layout — e.g. sources/Dockerfile, sources/ui/src/test.tsx,
                                # sources/spec.pdf. No required structure. This is
                                # INPUT, never knowledge, and never a topic page.
   _template/index.md          # copy this to start a new domain
-  _template/topic.md          # copy this to start a new self-knowledge topic page
+  _template/self-topic.md     # copy this to start a new self-knowledge topic page
   _template/source-topic.md   # copy this to start a new sources-derived topic page
 ```
 
-A topic page's *kind* is decided by its frontmatter, never by its location:
-- No `source_ref` / no `locked: true` → self-knowledge, freely editable.
-- `source_ref: <path into knowledge/<domain>/sources/...>` + `locked: true` →
-  sources-derived, never hand-edited.
+A topic page's *kind* is decided by which folder it's in, never by guessing from
+content or frontmatter alone:
+- `knowledge/<domain>/self/<topic>.md` → self-knowledge, freely editable.
+- `knowledge/<domain>/derived/<topic>.md` → sources-derived, never hand-edited;
+  frontmatter still carries `source_ref` + `locked: true` for traceability, but the
+  folder is what enforces the boundary — an agent should never need to open a file
+  and check its frontmatter just to know whether it's allowed to edit it.
 
 Never confuse a topic page with the raw file it mirrors. `knowledge/<domain>/sources/`
 holds only raw, untouched files (a Dockerfile, a test file, a PDF, a spec — whatever,
-wherever, no imposed layout). A `.md` page directly under `knowledge/<domain>/` is
-always curated knowledge about exactly one topic — it is never itself a raw file, and
-a raw file is never itself knowledge.
+wherever, no imposed layout). A `.md` page under `self/` or `derived/` is always
+curated knowledge about exactly one topic — it is never itself a raw file, and a raw
+file is never itself knowledge.
 
 There are two kinds of topic page and they must never overlap in content — see
 "Two kinds of knowledge" below before writing anything. `knowledge/_example/` is a
@@ -56,32 +60,48 @@ real domain.
    existing domain. Whether a new domain should be *created* is decided at write time
    (below), not read time.
 
-## Two kinds of knowledge — never mixed
+## Two kinds of knowledge — never mixed, never the same file
 
-- **Self-knowledge** (`knowledge/<domain>/<topic>.md`, no `source_ref`) — learned by
-  doing project work: gotchas, decisions and why, constraints, integration quirks.
+- **Self-knowledge** (`knowledge/<domain>/self/<topic>.md`) — learned by doing
+  project work: gotchas, decisions and why, constraints, integration quirks.
   Evolves freely as the project develops. This is the default kind — most tasks write
   here.
-- **Sources-derived** (`knowledge/<domain>/<topic>.md`, with `source_ref` +
-  `locked: true`) — generated from one raw file somewhere under
-  `knowledge/<domain>/sources/`. That file can be *any type* — a markdown doc, a PDF
-  spec, a code file, a Dockerfile, a config/schema file, anything, at any path, no
-  imposed layout. The knowledge page itself is always `.md`; what it mirrors isn't,
-  and the raw file is never edited or moved. Must mirror it faithfully: no inference,
-  no filling gaps, no "improving" the wording. **Locked** — never hand-edit these
-  during normal task work. Only touch them via the sync procedure below, and only
-  when the user adds/changes a file under `sources/` or gives you updated content for
-  one directly.
+- **Sources-derived** (`knowledge/<domain>/derived/<topic>.md`) — generated from one
+  raw file somewhere under `knowledge/<domain>/sources/`. That file can be *any
+  type* — a markdown doc, a PDF spec, a code file, a Dockerfile, a config/schema
+  file, anything, at any path, no imposed layout. The knowledge page itself is
+  always `.md`; what it mirrors isn't, and the raw file is never edited or moved.
+  Must mirror it faithfully: no inference, no filling gaps, no "improving" the
+  wording. Frontmatter still carries `source_ref` + `locked: true`. **Locked** —
+  never hand-edit these during normal task work. Only touch them via the sync
+  procedure below, and only when the user adds/changes a file under `sources/` or
+  gives you updated content for one directly.
+- The folder is the enforcement mechanism, not a suggestion: if you're about to edit
+  a file under a domain's `derived/`, stop — that edit belongs in `self/` instead
+  (either the matching-named file there, or a new one).
 - If a fact already lives in a sources-derived page, a self-knowledge page must link to
   it (`[[topic]]`) instead of restating it — the two must never say the same thing in
   two places that can drift apart. If you notice self-knowledge duplicating a
   sources-derived page, replace the duplicate with a link as part of that task.
+- A topic can legitimately have both a `self/<topic>.md` and a `derived/<topic>.md`
+  with the same name (e.g. the vendor's field reference in `derived/webhook.md` and
+  the team's integration gotchas in `self/webhook.md`) — that's the two kinds living
+  side by side without ever merging into one file.
 
-## After a task teaches something durable (self-knowledge)
+## Before ending any non-trivial task — check for durable knowledge
+
+This check is mandatory, not optional — ask it every time, even when the answer is
+no. Skipping the question (as opposed to answering "no") is the failure mode this
+step exists to prevent.
 
 Durable = a gotcha, a non-obvious constraint, an integration quirk, an architectural
 decision and why — something a future task in this area would benefit from knowing.
-Don't record routine implementation detail that's already obvious from reading the code.
+Not durable = routine implementation detail already obvious from reading the code, or
+a narrated log of what you did this session. Most routine tasks (typo fixes, trivial
+lookups, small mechanical edits) will honestly answer "no" — that's fine, don't force
+a page into existence.
+
+If the answer is yes, record it as self-knowledge before considering the task done:
 
 1. **Decide the domain.** A domain is a bounded area with its own concerns and
    vocabulary:
@@ -100,9 +120,9 @@ Don't record routine implementation detail that's already obvious from reading t
    - Add one row for it to the **Domains** table in `knowledge/main.md`.
 
 3. **New or updated topic page:**
-   - Copy `knowledge/_template/topic.md` to `knowledge/<domain>/<topic>.md` if new, or
-     edit the existing page if the topic already has one — prefer updating over
-     creating a near-duplicate page.
+   - Copy `knowledge/_template/self-topic.md` to `knowledge/<domain>/self/<topic>.md`
+     if new, or edit the existing page if the topic already has one there — prefer
+     updating over creating a near-duplicate page.
    - Fill in `description`, `source_refs`, `updated` in the frontmatter.
    - Write the knowledge itself: factual, specific, reference material — not a
      narrated changelog of what you did this session.
@@ -124,8 +144,8 @@ with whichever tool fits its type (Read handles text, markdown, and PDF directly
 1. Read the raw file in full.
 2. Decide the domain (same rule as above — usually already implied by which domain's
    `sources/` the file is under) and a topic name for it.
-3. Copy `knowledge/_template/source-topic.md` to `knowledge/<domain>/<topic>.md` if
-   new — same flat location as any other topic page, never inside `sources/` itself —
+3. Copy `knowledge/_template/source-topic.md` to
+   `knowledge/<domain>/derived/<topic>.md` if new — never inside `sources/` itself —
    or overwrite the existing page in place if this is a re-sync.
 4. Fill in frontmatter: `description`, `source_ref` (the raw file's path, e.g.
    `knowledge/<domain>/sources/<file>`), `locked: true`, `synced` (today's date).

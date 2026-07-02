@@ -10,11 +10,10 @@ Mirrors the `WebhookPayload` schema in
 `knowledge/_example/sources/payment-gateway/openapi.yaml` as of the `synced` date above.
 
 This page and the file it mirrors are two different things: the raw file sits in
-`sources/`, untouched, with no prose; this page is its readable mirror, living as a
-normal topic page directly under `knowledge/_example/`, right next to
-`retry-backoff.md`. Do not add detail here that isn't in the raw file — if you learn
-something about *how we handle* these fields, that's self-knowledge and belongs in
-`retry-backoff.md` instead.
+`sources/`, untouched, with no prose; this page is its readable mirror, living under
+`knowledge/_example/derived/`. Do not add detail here that isn't in the raw file — if
+you learn something about *how we handle* these fields, that's self-knowledge and
+belongs in `knowledge/_example/self/retry-backoff.md` instead.
 
 | Field | Type | Notes (from vendor spec) |
 |---|---|---|

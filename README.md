@@ -9,19 +9,19 @@ used with Claude Code.
 - `knowledge/main.md` — root index, lists all domains and routes to their index pages.
 - `knowledge/<domain>/index.md` — navigation hints for one domain (which page to read
   for which kind of work).
-- `knowledge/<domain>/<topic>.md` — every topic page for that domain, flat. Both kinds
-  of knowledge live here side by side:
-  - **Self-knowledge**: gotchas, decisions, constraints — evolves with the project.
-  - **Sources-derived**: mirrors one raw file from that domain's own `sources/`
-    folder, marked `locked: true` in its frontmatter, and locked until the user asks
-    for a re-sync.
-  The frontmatter, not the location, is what marks a page as sources-derived.
+- `knowledge/<domain>/self/<topic>.md` — self-knowledge: gotchas, decisions,
+  constraints — evolves with the project, freely editable.
+- `knowledge/<domain>/derived/<topic>.md` — sources-derived: mirrors one raw file from
+  that domain's own `sources/` folder, marked `locked: true` in its frontmatter, and
+  locked until the user asks for a re-sync.
+  The folder, not just the frontmatter, is what marks a page as sources-derived —
+  `self/` and `derived/` are never the same file.
 - `knowledge/<domain>/sources/...` — that domain's raw data lake: drop external
   material here, any file type, any layout (a Dockerfile, `ui/src/test.tsx`, a PDF
   spec — whatever, wherever). This is input, never knowledge, and never itself a topic
   page.
-- `knowledge/_template/` — copy `index.md` / `topic.md` / `source-topic.md` from here
-  when creating a new domain or page.
+- `knowledge/_template/` — copy `index.md` / `self-topic.md` / `source-topic.md` from
+  here when creating a new domain or page.
 - `knowledge/_example/` (with its own `sources/` fixture) — a filled-in worked example
   of both kinds side by side. Illustrative only, not a real domain.
 - `.claude/skills/knowledge-base/SKILL.md` — the read/write procedure Claude follows to
