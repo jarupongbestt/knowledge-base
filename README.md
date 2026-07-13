@@ -26,6 +26,9 @@ used with Claude Code.
   of both kinds side by side. Illustrative only, not a real domain.
 - `.claude/skills/knowledge-base/SKILL.md` — the read/write procedure Claude follows to
   keep this structure up to date as it learns things from tasks.
+- `.claude/agents/investigator.md` + `.claude/skills/root-cause/SKILL.md` — the
+  investigator subagent and the cited-evidence protocol it must follow before Claude
+  proposes a cause or fix for any requirement/error/setup question.
 
 ## Usage
 
