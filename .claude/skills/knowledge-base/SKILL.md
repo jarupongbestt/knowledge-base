@@ -131,6 +131,45 @@ special case, just step 1 with no existing rows to match against.
      narrated changelog of what you did this session.
    - Update the domain's `index.md` navigation table if the page is new or its
      "when working on..." scope changed.
+   - Append one line to `knowledge/log.md`: `## [YYYY-MM-DD] create|update | <domain> | <topic>`.
+
+## Contradiction handling
+
+When new information conflicts with an existing page, never overwrite silently:
+
+1. Keep both claims in the page, each labeled with its date.
+2. Set `contradiction: true` and `review-needed: true` in that page's frontmatter.
+3. Append `## [YYYY-MM-DD] flag-contradiction | <domain> | <subject>` to `knowledge/log.md`.
+4. Surface it to the user for resolution — do not auto-resolve, even if one claim
+   looks obviously more current than the other.
+
+This is the same principle as `derived/`-locking (don't let one version silently
+clobber another) applied to two knowledge claims disagreeing instead of a source
+drifting from its derived page.
+
+## Linting
+
+Run `python3 knowledge/_scripts/lint.py` on demand (and in CI, if wired up) before
+trusting the knowledge base is internally consistent — e.g. after a bulk edit, before
+a sync, or when something seems off. It is not autonomous: it reports findings and
+exits non-zero, it never edits anything.
+
+Deterministic (the script itself):
+- **orphan pages** — a `.md` under a domain's `self/`/`derived/` not linked from that
+  domain's `index.md`.
+- **index gap** — a domain not listed in `main.md`, or an index row pointing at a
+  missing file.
+- **stale derived** — a `derived/` page whose frontmatter `content_hash` no longer
+  matches a fresh hash of its `source_ref` file.
+- **broken links** — `source_ref`/`source_refs` or `[[wikilink]]` targets that don't
+  resolve.
+- **log size** — `knowledge/log.md` over ~500 entries (rotate to `log-YYYY.md`).
+
+Judgment (only run once the deterministic pass is clean — don't spend this on a
+tree that's already known to have gaps):
+- **contradiction scan** — one scoped subagent call that reads pages likely to
+  overlap and reports pairs of conflicting claims. It reports only; it does not edit
+  — findings feed the "Contradiction handling" procedure above.
 
 ## Syncing knowledge from sources/ (sources-derived)
 
@@ -159,18 +198,44 @@ with whichever tool fits its type (Read handles text, markdown, and PDF directly
    `knowledge/<domain>/derived/<topic>.md` if new — never inside `sources/` itself —
    or overwrite the existing page in place if this is a re-sync.
 4. Fill in frontmatter: `description`, `source_ref` (the raw file's path, e.g.
-   `knowledge/<domain>/sources/<file>`), `locked: true`, `synced` (today's date).
+   `knowledge/<domain>/sources/<file>`), `locked: true`, `synced` (today's date),
+   `content_hash` (sha256 of the raw file at `source_ref` — this is what `lint`'s
+   stale-derived check compares against on future runs).
 5. Write only what the raw file says — a faithful mirror or faithful summary, not
    commentary, not inferred detail, not merged-in self-knowledge.
 6. Update the domain's `index.md` — add/update a row under its "Sources-derived" table
    (create that section if this is the domain's first sources-derived page).
 7. Add a row for the domain in `main.md` if it's new.
+8. Check for conflicts with existing pages (any domain) before finishing — if found,
+   follow "Contradiction handling" above instead of overwriting.
+9. Append `## [YYYY-MM-DD] sync | <domain> | <topic>` to `knowledge/log.md`.
 
 If the user gives you updated info for a sources-derived fact directly in chat (rather
 than adding/changing a file under `sources/`), treat it the same way: update the
-sources-derived page and bump `synced`, don't just drop it into a self-knowledge page.
+sources-derived page and bump `synced` and `content_hash`, don't just drop it into a
+self-knowledge page.
+
+Per-claim provenance markers (e.g. `^[sources/<file>.md]` at the end of a paragraph)
+are deliberately **not** used yet — today's `derived/` pages are a 1:1 mirror of one
+`sources/` file, so provenance is already implicit. Only add them the first time a
+page synthesizes claims from 3+ sources; adding them before that is unneeded
+overhead.
 
 ## Frontmatter rules
 
 All `knowledge/` pages use flat, inline YAML frontmatter only — no lists/arrays, no
 nested objects. `source_refs` and `source_ref` are plain strings, not YAML lists.
+
+Additional optional fields:
+- `content_hash` (`derived/` pages only) — sha256 of the file at `source_ref`, set at
+  sync time, used by `lint` to detect drift.
+- `contradiction: true` / `review-needed: true` — set on a page when the
+  "Contradiction handling" procedure fires; cleared once a human resolves it.
+
+## Action log
+
+`knowledge/log.md` is one append-only file for the whole repo (not per-domain — "what
+changed in the KB this week" is a cross-domain query). Every create / update / sync /
+flag-contradiction appends one line (format at the top of the file); see the relevant
+procedure above for exactly when to append. When it exceeds ~500 entries (`lint`
+flags this), rename it to `log-YYYY.md` and start a fresh `log.md`.

@@ -3,10 +3,14 @@
 Before reading or searching any other file in this repo, ALWAYS read `knowledge/main.md`
 first — no exceptions, even for tasks that look trivial. It routes you to the domain
 that already has the relevant context, so you don't need to scan the whole repo.
+Immediately after, read the last ~20-30 lines of `knowledge/log.md` for recent
+cross-domain activity, before touching any domain.
 
 This repo keeps durable, domain-organized knowledge in `knowledge/` (separate from
 code). Use the `knowledge-base` skill for the full read/write procedure — which domain
-to follow from `main.md`, and how to record anything a task teaches you.
+to follow from `main.md`, and how to record anything a task teaches you. Maintenance
+machinery (action log, `lint`, contradiction handling, `ingest`) is documented there;
+design/rationale: `.claude/machinery-upgrade-spec.md`.
 
 Before writing any knowledge page, ask **external resource vs. internal project
 work** — this decides the folder, not how important or permanent the fact feels:

@@ -1,0 +1,51 @@
+name: sources read-only check
+
+# Phase 1 (current): knowledge/*/sources/** is meant to be touched only by the
+# `ingest` skill's Normalize step, never hand-edited. Since `ingest` is still a
+# human-in-the-loop flow (it has an explicit Gate step), we enforce this with a
+# PR label rather than an automated identity, and fail any PR that touches
+# sources/** without the "ingest" label attached.
+#
+# Phase 2 (future, once `ingest` runs unattended): replace the label bypass with
+# an identity check — only a dedicated ingest bot/service account may touch
+# sources/** — and make this check fail-always for any human-authored PR.
+# See .claude/machinery-upgrade-spec.md (Change 5) for the full rationale.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  check-sources-readonly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes under knowledge/*/sources/**
+        id: diff
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ github.event.pull_request.base.sha }}" --depth=1
+          changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" -- 'knowledge/*/sources/**')
+          if [ -n "$changed" ]; then
+            echo "touched=true" >> "$GITHUB_OUTPUT"
+            echo "Changed sources/ files:"
+            echo "$changed"
+          else
+            echo "touched=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Fail unless PR is labeled 'ingest'
+        if: steps.diff.outputs.touched == 'true'
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          if echo ",${LABELS}," | grep -q ',ingest,'; then
+            echo "sources/** changed, but PR is labeled 'ingest' — allowed."
+          else
+            echo "::error::This PR modifies knowledge/*/sources/** without the 'ingest' label. sources/ is raw input and must only change via the ingest pipeline. Add the 'ingest' label if this is a genuine ingest, or revert the sources/ change."
+            exit 1
+          fi
