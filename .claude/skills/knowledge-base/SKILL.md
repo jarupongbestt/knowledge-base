@@ -131,6 +131,9 @@ special case, just step 1 with no existing rows to match against.
      narrated changelog of what you did this session.
    - Update the domain's `index.md` navigation table if the page is new or its
      "when working on..." scope changed.
+   - Run `python3 knowledge/_scripts/lint.py` now, before considering the page done —
+     catches a broken `[[wikilink]]`/`source_ref` or an index gap while you still have
+     full context to fix it. Fix any finding it reports before moving on.
    - Append one line to `knowledge/log.md`: `## [YYYY-MM-DD] create|update | <domain> | <topic>`.
 
 ## Contradiction handling
@@ -149,10 +152,14 @@ drifting from its derived page.
 
 ## Linting
 
-Run `python3 knowledge/_scripts/lint.py` on demand (and in CI, if wired up) before
-trusting the knowledge base is internally consistent — e.g. after a bulk edit, before
-a sync, or when something seems off. It is not autonomous: it reports findings and
-exits non-zero, it never edits anything.
+Run `python3 knowledge/_scripts/lint.py` right after you finish creating, updating, or
+syncing any page — that's the point where you still have full context to fix whatever
+it finds, so this is a step inside the write/sync/ingest procedures, not a separate
+occasional chore. This is deliberately not a CI/push-time check: catching a dead link
+at push time only tells you it broke sometime earlier, after the context that would
+let you fix it easily is gone. (A CI gate on `knowledge/**`, if ever added, would serve
+a different purpose — a final backstop before merge — not this one.) It is not
+autonomous: it reports findings and exits non-zero, it never edits anything.
 
 Deterministic (the script itself):
 - **orphan pages** — a `.md` under a domain's `self/`/`derived/` not linked from that
@@ -208,7 +215,9 @@ with whichever tool fits its type (Read handles text, markdown, and PDF directly
 7. Add a row for the domain in `main.md` if it's new.
 8. Check for conflicts with existing pages (any domain) before finishing — if found,
    follow "Contradiction handling" above instead of overwriting.
-9. Append `## [YYYY-MM-DD] sync | <domain> | <topic>` to `knowledge/log.md`.
+9. Run `python3 knowledge/_scripts/lint.py` now and fix any finding — same reasoning
+   as in "Recording self-knowledge": catch it while the context is fresh.
+10. Append `## [YYYY-MM-DD] sync | <domain> | <topic>` to `knowledge/log.md`.
 
 If the user gives you updated info for a sources-derived fact directly in chat (rather
 than adding/changing a file under `sources/`), treat it the same way: update the

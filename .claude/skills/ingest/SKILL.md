@@ -53,11 +53,15 @@ content_hash: <sha256 of the normalized markdown>
 For each new/changed source file, follow the `knowledge-base` skill's existing sync
 procedure: generate/update `knowledge/<domain>/derived/<slug>.md` (with its own
 `content_hash` pointing at the `sources/` file), update the domain's `index.md` and
-`main.md`, run contradiction handling if a claim conflicts with an existing page, and
-append `## [YYYY-MM-DD] ingest | <domain> | <slug>` to `knowledge/log.md` for each
-compiled page. `self/` for this domain stays empty until the project actually *uses*
-what was ingested and learns something from that (e.g. "this endpoint rate-limits
-hard, batch it") — that's internal knowledge, recorded the normal way.
+`main.md`, run contradiction handling if a claim conflicts with an existing page, run
+`python3 knowledge/_scripts/lint.py` and fix anything it finds before moving to the
+next page (catch a dead link right after compiling that page, not after the whole
+batch — see the `knowledge-base` skill's "Linting" section for why this runs here and
+not as a push-time check), and append `## [YYYY-MM-DD] ingest | <domain> | <slug>` to
+`knowledge/log.md` for each compiled page. `self/` for this domain stays empty until
+the project actually *uses* what was ingested and learns something from that (e.g.
+"this endpoint rate-limits hard, batch it") — that's internal knowledge, recorded the
+normal way.
 
 ## 5. Re-sync
 
